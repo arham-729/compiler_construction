@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # C Compiler - Automated Test Runner (Linux/macOS)
-COMPILER="./bin/compiler.exe"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPILER="$SCRIPT_DIR/../bin/compiler.exe"
 PASS_COUNT=0
 FAIL_COUNT=0
 TOTAL_TESTS=0
@@ -9,7 +10,7 @@ TOTAL_TESTS=0
 # Check if compiler exists
 if [ ! -f "$COMPILER" ]; then
     echo "Error: Compiler not found at $COMPILER"
-    echo "Please compile the compiler first:"
+    echo "Please compile the compiler first (from root):"
     echo "  bison -d src/parser.y -o src/parser.tab.c"
     echo "  flex -o src/lex.yy.c src/lexer.l"
     echo "  gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe"

@@ -14,14 +14,14 @@ Each test can be run by executing the compiler and pasting the test code:
 
 ### Automated Testing (Shell Script)
 
-For Windows PowerShell, 
+For Windows PowerShell: 
 
 ```powershell
 # Run all tests
-.\run_tests.ps1
+.\tests\run_tests.ps1
 ```
 
-Linux/macOS bash equivalent: `run_tests.sh`
+Linux/macOS bash equivalent: `tests/run_tests.sh`
 
 ---
 

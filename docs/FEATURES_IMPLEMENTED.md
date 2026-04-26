@@ -260,8 +260,8 @@
 ### ✅ Test Cases
 - **Files Created:**
   - [x] `TESTS.md` - 41 comprehensive test cases
-  - [x] `run_tests.sh` - Automated bash test runner
-  - [x] `run_tests.ps1` - Automated PowerShell test runner
+  - [x] `tests/run_tests.sh` - Automated bash test runner
+  - [x] `tests/run_tests.ps1` - Automated PowerShell test runner
 
 **Test Coverage:**
 - Basic Tests: 3 cases

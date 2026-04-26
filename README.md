@@ -323,7 +323,7 @@ Detailed test results and methodologies can be found in [docs/TESTS.md](docs/TES
 ### Automated Testing
 Run the comprehensive test suite (37 tests):
 ```powershell
-.\run_tests.ps1
+.\tests\run_tests.ps1
 ```
 
 Run the compiler and test with a simple example:

@@ -1,7 +1,7 @@
 # C Compiler - Automated Test Runner (Windows PowerShell)
 # This script runs all test cases and generates a report
 
-$COMPILER = ".\bin\compiler.exe"
+$COMPILER = "$PSScriptRoot\..\bin\compiler.exe"
 $PASS_COUNT = 0
 $FAIL_COUNT = 0
 $TOTAL_TESTS = 0
@@ -9,7 +9,7 @@ $TOTAL_TESTS = 0
 # Check if compiler exists
 if (!(Test-Path $COMPILER)) {
     Write-Host "Error: Compiler not found at $COMPILER" -ForegroundColor Red
-    Write-Host "Please compile the compiler first:"
+    Write-Host "Please compile the compiler first (from the root directory):"
     Write-Host "  bison -d src/parser.y -o src/parser.tab.c"
     Write-Host "  flex -o src/lex.yy.c src/lexer.l"
     Write-Host "  gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe"
