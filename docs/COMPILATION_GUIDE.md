@@ -2,10 +2,10 @@
 
 ## Quick Start
 
-### One-Line Build (All Platforms)
+### One-Line Build (Recommended)
 
 ```bash
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
+bison -d src/parser.y -o src/parser.tab.c; flex -o src/lex.yy.c src/lexer.l; gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
 ```
 
 ---
@@ -44,23 +44,11 @@ flex lexer.l
 ### Step 3: Compile All Source Files
 
 ```bash
-gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
 ```
 
-**Source Files Compiled:**
-| File | Purpose |
-|------|---------|
-| `lex.yy.c` | Lexer (generated from lexer.l) |
-| `parser.tab.c` | Parser (generated from parser.y) |
-| `ast.c` | AST implementation |
-| `symtab.c` | Symbol table |
-| `semantic.c` | Semantic analyzer |
-| `optimize.c` | Optimizer |
-| `ir.c` | Intermediate code generator |
-| `main.c` | Compiler driver |
-
 **Output:**
-- `compiler.exe` - The compiled compiler executable
+- `bin/compiler.exe` - The compiled compiler executable
 
 ---
 
@@ -69,14 +57,8 @@ gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o co
 ### Windows (MinGW with Git Bash)
 
 ```bash
-# Navigate to project directory
-cd d:\important\cc_project\compiler_construction
-
-# Build
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
-
 # Run
-.\compiler.exe
+.\bin\compiler.exe
 ```
 
 ### Linux (Ubuntu/Debian)

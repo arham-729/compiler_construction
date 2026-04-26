@@ -7,7 +7,7 @@
 Each test can be run by executing the compiler and pasting the test code:
 
 ```bash
-.\compiler.exe          # Start the compiler
+.\bin\compiler.exe       # Start the compiler
 # Paste test code here
 # Press Ctrl+Z to finish
 ```

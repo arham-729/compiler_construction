@@ -177,7 +177,7 @@
   - [x] Array with loop integration
   - [x] Array in for loops
   - [x] Array in while loops
-  - [x] Multidimensional array support (grammar)
+  - [x] Multidimensional array support: `int arr[rows][cols]`
   - [x] Bounds checking in semantic phase
   - [x] Array element TAC generation
 
@@ -248,14 +248,14 @@
   - [x] Logical separation of concerns
 
 **File Organization:**
-- `lexer.l` - Lexical analysis rules
-- `parser.y` - Grammar rules
-- `ast.h/ast.c` - AST structure and creation
-- `semantic.h/semantic.c` - Semantic analysis
-- `symtab.h/symtab.c` - Symbol table
-- `optimize.h/optimize.c` - Optimization
-- `ir.h/ir.c` - Intermediate code generation
-- `main.c` - Compiler driver
+- `src/lexer.l` - Lexical analysis rules
+- `src/parser.y` - Grammar rules
+- `src/ast.c` - AST structure and creation
+- `src/semantic.c` - Semantic analysis
+- `src/symtab.c` - Symbol table
+- `src/optimize.c` - Optimization
+- `src/ir.c` - Intermediate code generator
+- `src/main.c` - Compiler driver
 
 ### ✅ Test Cases
 - **Files Created:**

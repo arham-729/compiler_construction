@@ -53,15 +53,23 @@ brew install bison flex gcc
 
 ```
 compiler_construction/
-├── lexer.l              # Lexical analyzer (flex)
-├── parser.y             # Syntax analyzer (bison)
-├── ast.h / ast.c        # Abstract Syntax Tree definitions
-├── semantic.h / semantic.c  # Semantic analysis
-├── symtab.h / symtab.c      # Symbol table management
-├── optimize.h / optimize.c  # Code optimization
-├── ir.h / ir.c              # Intermediate Representation (TAC)
-├── main.c               # Compiler entry point
-└── README.md            # This file
+├── src/                 # Handwritten source code
+│   ├── lexer.l          # Lexical analyzer (flex)
+│   ├── parser.y         # Syntax analyzer (bison)
+│   ├── ast.h / ast.c    # AST definitions
+│   ├── semantic.h / .c  # Semantic analysis
+│   ├── symtab.h / .c    # Symbol table
+│   ├── optimize.h / .c  # Code optimization
+│   ├── ir.h / ir.c      # Intermediate Representation (TAC)
+│   └── main.c           # Compiler driver
+├── docs/                # Project documentation
+│   ├── TESTS.md
+│   ├── COMPILATION_GUIDE.md
+│   └── FEATURES_IMPLEMENTED.md
+├── bin/                 # Compiled binaries
+├── tests/               # Example programs and benchmarks
+├── README.md            # Project overview (this file)
+└── run_tests.ps1        # Automated test suite
 ```
 
 ### File Descriptions
@@ -81,25 +89,22 @@ compiler_construction/
 
 ## Compilation Instructions
 
-### Step 1: Generate Lexer and Parser
+### Standard Compilation
 
 ```bash
-# Generate parser from grammar
-bison -d parser.y      # Creates parser.tab.c and parser.tab.h
+# 1. Generate grammar files
+bison -d src/parser.y -o src/parser.tab.c
 
-# Generate lexer from rules
-flex lexer.l           # Creates lex.yy.c
+# 2. Generate lexer files
+flex -o src/lex.yy.c src/lexer.l
+
+# 3. Compile the compiler
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
 ```
 
-### Step 2: Compile the Compiler
-
+**One-line command:**
 ```bash
-gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
-```
-
-**All-in-one command:**
-```bash
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
+bison -d src/parser.y -o src/parser.tab.c; flex -o src/lex.yy.c src/lexer.l; gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
 ```
 
 ---
@@ -313,9 +318,13 @@ int main() {
 
 ## Testing
 
-See `TESTS.md` for comprehensive test cases with expected outputs.
+Detailed test results and methodologies can be found in [docs/TESTS.md](docs/TESTS.md).
 
-### Quick Test
+### Automated Testing
+Run the comprehensive test suite (37 tests):
+```powershell
+.\run_tests.ps1
+```
 
 Run the compiler and test with a simple example:
 
