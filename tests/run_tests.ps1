@@ -12,7 +12,7 @@ if (!(Test-Path $COMPILER)) {
     Write-Host "Please compile the compiler first (from the root directory):"
     Write-Host "  bison -d src/parser.y -o src/parser.tab.c"
     Write-Host "  flex -o src/lex.yy.c src/lexer.l"
-    Write-Host "  gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe"
+    Write-Host "  gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe"
     exit 1
 }
 
@@ -30,7 +30,7 @@ function Run-Test {
         [string]$expectedKey
     )
     
-    [int]$script:TOTAL_TESTS++
+    [void]($script:TOTAL_TESTS++)
     
     # Run the test
     $output = $testCode | & $COMPILER 2>&1 | Out-String
@@ -38,11 +38,55 @@ function Run-Test {
     # Check if expected output is present
     if ($output -match [regex]::Escape($expectedKey)) {
         Write-Host "PASS - Test $testNum`: $testName" -ForegroundColor Green
-        [int]$script:PASS_COUNT++
+        [void]($script:PASS_COUNT++)
     }
     else {
         Write-Host "FAIL - Test $testNum`: $testName" -ForegroundColor Red
-        [int]$script:FAIL_COUNT++
+        [void]($script:FAIL_COUNT++)
+    }
+}
+
+function Run-TestRegex {
+    param(
+        [string]$testNum,
+        [string]$testName,
+        [string]$testCode,
+        [string]$expectedPattern
+    )
+
+    [void]($script:TOTAL_TESTS++)
+
+    $output = $testCode | & $COMPILER 2>&1 | Out-String
+
+    if ($output -match $expectedPattern) {
+        Write-Host "PASS - Test $testNum`: $testName" -ForegroundColor Green
+        [void]($script:PASS_COUNT++)
+    }
+    else {
+        Write-Host "FAIL - Test $testNum`: $testName" -ForegroundColor Red
+        [void]($script:FAIL_COUNT++)
+    }
+}
+
+function Run-TestNotRegex {
+    param(
+        [string]$testNum,
+        [string]$testName,
+        [string]$testCode,
+        [string]$forbiddenPattern
+    )
+
+    [void]($script:TOTAL_TESTS++)
+
+    $output = $testCode | & $COMPILER 2>&1 | Out-String
+
+    if ($output -notmatch $forbiddenPattern) {
+        Write-Host "PASS - Test $testNum`: $testName" -ForegroundColor Green
+        [void]($script:PASS_COUNT++)
+    }
+    else {
+        Write-Host "FAIL - Test $testNum`: $testName" -ForegroundColor Red
+        [void]($script:FAIL_COUNT++)
     }
 }
 
@@ -207,9 +251,9 @@ Run-Test "8.4" "Nested Function Calls" `
 # OPTIMIZATION TESTS
 Write-Host ""
 Write-Host "--- OPTIMIZATION TESTS ---" -ForegroundColor Blue
-Run-Test "10.1" "Constant Folding" `
+Run-Test "10.1" "Constant Folding with Precedence" `
     'int main() { int x; x = 5 + 3 * 2 - 1; return x; }' `
-    "Folded constants"
+    "x = 10"
 
 Run-Test "10.2" "Unary Operator Folding" `
     'int main() { int x; x = !0; return x; }' `
@@ -229,6 +273,38 @@ Run-Test "11.1" "Undeclared Variable" `
 Run-Test "11.2" "Variable Redeclaration" `
     'int main() { int x; int x; return 0; }' `
     "Semantic Error"
+
+Run-Test "11.3" "Undefined Function" `
+    'int main() { return foo(5); }' `
+    "Undefined function 'foo'"
+
+Run-Test "11.4" "Function Arity Mismatch" `
+    'int add(int a, int b) { return a + b; } int main() { return add(1); }' `
+    "Function 'add' expects 2 arguments but got 1"
+
+Run-Test "11.5" "Array Bounds Checking" `
+    'int main() { int arr[2]; return arr[5]; }' `
+    "Array 'arr' index 5 out of bounds"
+
+Write-Host ""
+Write-Host "--- TAC CORRECTNESS TESTS ---" -ForegroundColor Blue
+Run-TestNotRegex "12.1" "No Duplicate Return After Explicit Return" `
+    'int main() { return 1; }' `
+    'return 1\s*\r?\nreturn'
+
+Write-Host ""
+Write-Host "--- TARGET CODE GENERATION TESTS ---" -ForegroundColor Blue
+Run-Test "13.1" "Stack VM Code For Folded Assignment" `
+    'int main() { int x; x = 5 + 3 * 2 - 1; return x; }' `
+    "PUSHI 10"
+
+Run-Test "13.2" "Stack VM Function Call" `
+    'int add(int a, int b) { return a + b; } int main() { return add(5, 10); }' `
+    "CALL add 2"
+
+Run-TestRegex "13.3" "Correct 2D Array Width In Backends" `
+    'int main() { int arr[2][3]; arr[1][2] = 7; return arr[1][2]; }' `
+    't1 = 1 \* 3|PUSHI 3'
 
 Write-Host ""
 Write-Host "========== TEST SUMMARY ==========" -ForegroundColor Blue

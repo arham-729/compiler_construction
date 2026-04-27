@@ -17,19 +17,22 @@ ASTNode *root;
     struct ASTNode *node;
 }
 
-%token <str> TYPE ID ARITH_OP REL_OP
+%token <str> TYPE ID ADD_OP MUL_OP REL_OP
 %token <num> NUM
 %token IF ELSE WHILE FOR RETURN ASSIGN SEMICOLON LPAREN RPAREN LBRACE RBRACE
 %token AND OR NOT LBRACKET RBRACKET COMMA
 
 %type <node> program item statement expr assignment declaration func_decl func_body
 %type <node> param_list params if_statement while_statement for_statement return_statement
-%type <node> block statement_list arg_list
+%type <node> block statement_list arg_list logical_or logical_and relational
+%type <node> additive multiplicative unary primary
 
 %left OR
 %left AND
 %left REL_OP
-%left ARITH_OP
+%left ADD_OP
+%left MUL_OP
+%right NOT
 
 %%
 program:
@@ -113,17 +116,46 @@ return_statement:
     ;
 
 expr:
+    logical_or { $$ = $1; }
+    ;
+
+logical_or:
+    logical_and { $$ = $1; }
+    | logical_or OR logical_and { $$ = create_binop_node("||", $1, $3); }
+    ;
+
+logical_and:
+    relational { $$ = $1; }
+    | logical_and AND relational { $$ = create_binop_node("&&", $1, $3); }
+    ;
+
+relational:
+    additive { $$ = $1; }
+    | relational REL_OP additive { $$ = create_binop_node($2, $1, $3); }
+    ;
+
+additive:
+    multiplicative { $$ = $1; }
+    | additive ADD_OP multiplicative { $$ = create_binop_node($2, $1, $3); }
+    ;
+
+multiplicative:
+    unary { $$ = $1; }
+    | multiplicative MUL_OP unary { $$ = create_binop_node($2, $1, $3); }
+    ;
+
+unary:
+    NOT unary { $$ = create_unop_node("!", $2); }
+    | primary { $$ = $1; }
+    ;
+
+primary:
     NUM { $$ = create_num_node($1); }
     | ID { $$ = create_id_node($1); }
     | ID LBRACKET expr RBRACKET { $$ = create_array_access_node($1, $3); }
     | ID LBRACKET expr RBRACKET LBRACKET expr RBRACKET { $$ = create_array_access_2d_node($1, $3, $6); }
     | ID LPAREN arg_list RPAREN { $$ = create_func_call_node($1, $3); }
     | ID LPAREN RPAREN { $$ = create_func_call_node($1, NULL); }
-    | expr ARITH_OP expr { $$ = create_binop_node($2, $1, $3); }
-    | expr REL_OP expr { $$ = create_binop_node($2, $1, $3); }
-    | expr AND expr { $$ = create_binop_node("&&", $1, $3); }
-    | expr OR expr { $$ = create_binop_node("||", $1, $3); }
-    | NOT expr { $$ = create_unop_node("!", $2); }
     | LPAREN expr RPAREN { $$ = $2; }
     ;
 

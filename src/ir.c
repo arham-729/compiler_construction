@@ -21,6 +21,29 @@ int new_label() {
 // Forward declaration
 char* generate_tac_expr(ASTNode *node);
 
+static int guarantees_return(ASTNode *node) {
+    if (!node) return 0;
+
+    if (node->type == NODE_RETURN) {
+        return 1;
+    }
+
+    if (node->type == NODE_SEQ) {
+        if (guarantees_return(node->left)) {
+            return 1;
+        }
+        return guarantees_return(node->right);
+    }
+
+    if (node->type == NODE_IF) {
+        return node->right &&
+               guarantees_return(node->left) &&
+               guarantees_return(node->right);
+    }
+
+    return 0;
+}
+
 // Helper to generate param instructions for function calls
 void generate_tac_args(ASTNode *node, int *count) {
     if (!node) return;
@@ -56,8 +79,7 @@ char* generate_tac_expr(ASTNode *node) {
         char *idx1 = generate_tac_expr(node->left);
         if (node->right) { // 2D Access
             char *idx2 = generate_tac_expr(node->right);
-            Symbol *sym = lookup_symbol(node->name);
-            int width = (sym && sym->size2 > 0) ? sym->size2 : 1;
+            int width = (node->array_size2 > 0) ? node->array_size2 : 1;
             
             int t1 = new_temp();
             printf("t%d = %s * %d\n", t1, idx1, width);
@@ -116,7 +138,9 @@ void generate_tac(ASTNode *node) {
 
     if (node->type == NODE_SEQ) {
         generate_tac(node->left);
-        generate_tac(node->right);
+        if (!guarantees_return(node->left)) {
+            generate_tac(node->right);
+        }
     }
     else if (node->type == NODE_ASSIGN) {
         char *expr_val = generate_tac_expr(node->left);
@@ -127,8 +151,7 @@ void generate_tac(ASTNode *node) {
         if (node->cond) { // 2D Assign
             char *idx2 = generate_tac_expr(node->cond);
             char *expr_val = generate_tac_expr(node->left);
-            Symbol *sym = lookup_symbol(node->name);
-            int width = (sym && sym->size2 > 0) ? sym->size2 : 1;
+            int width = (node->array_size2 > 0) ? node->array_size2 : 1;
             
             int t1 = new_temp();
             printf("t%d = %s * %d\n", t1, idx1, width);
@@ -195,7 +218,9 @@ void generate_tac(ASTNode *node) {
     else if (node->type == NODE_FUNC_DECL) {
         printf("\nFunc %s:\n", node->name);
         generate_tac(node->body);
-        printf("return\n");
+        if (!guarantees_return(node->body)) {
+            printf("return\n");
+        }
     }
     else if (node->type == NODE_RETURN) {
         if (node->left) {
