@@ -1,0 +1,14 @@
+{
+  "workspace": "D:\\Uni\\Semester 8\\CC\\compiler_construction\\tmp\\presentations\\compiler-construction-presentation",
+  "pptx": "D:\\Uni\\Semester 8\\CC\\compiler_construction\\tmp\\presentations\\compiler-construction-presentation\\output\\output.pptx",
+  "checks": {
+    "output_hygiene": {
+      "output_dir": "D:\\Uni\\Semester 8\\CC\\compiler_construction\\tmp\\presentations\\compiler-construction-presentation\\output",
+      "unexpected_files": []
+    }
+  },
+  "failures": [
+    "PPTX package inspection failed: unzip -Z1 D:\\Uni\\Semester 8\\CC\\compiler_construction\\tmp\\presentations\\compiler-construction-presentation\\output\\output.pptx failed"
+  ],
+  "warnings": []
+}

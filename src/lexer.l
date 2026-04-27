@@ -20,7 +20,8 @@
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return ID; }
 [0-9]+                  { yylval.num = atoi(yytext); return NUM; }
 
-"+"|"-"|"*"|"/"         { yylval.str = strdup(yytext); return ARITH_OP; }
+"+"|"-"                 { yylval.str = strdup(yytext); return ADD_OP; }
+"*"|"/"                 { yylval.str = strdup(yytext); return MUL_OP; }
 "<"|">"|"<="|">="|"=="|"!=" { yylval.str = strdup(yytext); return REL_OP; }
 "&&"                    { return AND; }
 "||"                    { return OR; }

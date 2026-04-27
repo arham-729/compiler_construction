@@ -26,7 +26,8 @@ A complete compiler implementation for a well-defined subset of the C programmin
 ## System Requirements
 
 - **OS:** Windows, Linux, or macOS
-- **Compiler Tools:** GCC, Bison, Flex
+- **Compiler Tools:** GCC
+- **Optional Regeneration Tools:** Bison, Flex
 - **Languages:** C
 
 ### Installation
@@ -83,6 +84,7 @@ compiler_construction/
 | `symtab.c` | Symbol table with scope management |
 | `optimize.c` | Constant folding and dead code elimination |
 | `ir.c` | Three-Address Code (TAC) generation |
+| `target.c` | Stack-VM target code generation |
 | `main.c` | Main compiler driver |
 
 ---
@@ -90,6 +92,14 @@ compiler_construction/
 ## Compilation Instructions
 
 ### Standard Compilation
+
+If `src/lex.yy.c` and `src/parser.tab.c` are already present, you can rebuild with GCC only:
+
+```bash
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe
+```
+
+To regenerate the parser and lexer first:
 
 ```bash
 # 1. Generate grammar files
@@ -99,12 +109,12 @@ bison -d src/parser.y -o src/parser.tab.c
 flex -o src/lex.yy.c src/lexer.l
 
 # 3. Compile the compiler
-gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe
 ```
 
-**One-line command:**
+**One-line regeneration command:**
 ```bash
-bison -d src/parser.y -o src/parser.tab.c; flex -o src/lex.yy.c src/lexer.l; gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
+bison -d src/parser.y -o src/parser.tab.c; flex -o src/lex.yy.c src/lexer.l; gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe
 ```
 
 ---
@@ -321,9 +331,14 @@ int main() {
 Detailed test results and methodologies can be found in [docs/TESTS.md](docs/TESTS.md).
 
 ### Automated Testing
-Run the comprehensive test suite (37 tests):
+Run the comprehensive test suite (44 tests):
 ```powershell
 .\tests\run_tests.ps1
+```
+
+Equivalent Bash runner:
+```bash
+bash tests/run_tests.sh
 ```
 
 Run the compiler and test with a simple example:
@@ -398,7 +413,7 @@ The compiler reports semantic errors such as:
 
 ## Future Enhancements
 
-- [ ] Add LLVM integration for target code generation
+- [x] Add stack-VM target code generation backend
 - [ ] Implement code execution (interpreter)
 - [ ] Support for more data types (float, char, etc.)
 - [ ] String literals and printf support

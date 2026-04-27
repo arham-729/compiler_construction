@@ -1,328 +1,70 @@
 # Compilation Guide
 
-## Quick Start
+## Fastest Build Path
 
-### One-Line Build (Recommended)
+If you already have the generated parser and lexer files in the repo, a GCC-only rebuild is enough:
 
 ```bash
-bison -d src/parser.y -o src/parser.tab.c; flex -o src/lex.yy.c src/lexer.l; gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe
 ```
 
----
+This is the simplest option on machines where `gcc` is installed but `bison` and `flex` are not.
 
-## Step-by-Step Compilation
+## Full Regeneration Build
 
-### Step 1: Generate Parser from Grammar
+If you want to regenerate the parser and lexer from source:
 
 ```bash
-bison -d parser.y
+bison -d src/parser.y -o src/parser.tab.c
+flex -o src/lex.yy.c src/lexer.l
+gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/target.c src/main.c -o bin/compiler.exe
 ```
 
-**Output Files:**
-- `parser.tab.c` - Parser implementation
-- `parser.tab.h` - Parser header (contains token definitions)
-
-**Flags:**
-- `-d` - Generate header file
-
----
-
-### Step 2: Generate Lexer from Rules
+## Run
 
 ```bash
-flex lexer.l
-```
-
-**Output Files:**
-- `lex.yy.c` - Lexer implementation
-
-**Flags:**
-- (none required for this project)
-
----
-
-### Step 3: Compile All Source Files
-
-```bash
-gcc src/lex.yy.c src/parser.tab.c src/ast.c src/symtab.c src/semantic.c src/optimize.c src/ir.c src/main.c -o bin/compiler.exe
-```
-
-**Output:**
-- `bin/compiler.exe` - The compiled compiler executable
-
----
-
-## Platform-Specific Instructions
-
-### Windows (MinGW with Git Bash)
-
-```bash
-# Run
 .\bin\compiler.exe
 ```
 
-### Linux (Ubuntu/Debian)
+Then paste a program and finish input with:
 
-```bash
-# Install required tools
-sudo apt-get install bison flex gcc
+- `Ctrl+Z` on Windows
+- `Ctrl+D` on Linux/macOS
 
-# Navigate to project directory
-cd ~/cc_project/compiler_construction
+## Example
 
-# Build
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
-
-# Run
-./compiler
+```c
+int main() {
+    int x;
+    x = 5 + 3 * 2 - 1;
+    return x;
+}
 ```
 
-### macOS
+## Tool Requirements
 
-```bash
-# Install required tools (using Homebrew)
-brew install bison flex gcc
+### Minimum
+- `gcc`
 
-# Navigate to project directory
-cd ~/cc_project/compiler_construction
+### For source regeneration
+- `bison`
+- `flex`
 
-# Build
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
+## Verification
 
-# Run
-./compiler
-```
-
----
-
-## Troubleshooting
-
-### Error: "bison: command not found"
-
-**Windows:**
-```bash
-choco install bison
-# or download from https://gnuwin32.sourceforge.net/packages/bison.htm
-```
-
-**Linux:**
-```bash
-sudo apt-get install bison
-```
-
-**macOS:**
-```bash
-brew install bison
-```
-
----
-
-### Error: "flex: command not found"
-
-**Windows:**
-```bash
-choco install flex
-# or download from https://gnuwin32.sourceforge.net/packages/flex.htm
-```
-
-**Linux:**
-```bash
-sudo apt-get install flex
-```
-
-**macOS:**
-```bash
-brew install flex
-```
-
----
-
-### Error: "gcc: command not found"
-
-**Windows:**
-```bash
-# Install MinGW or use MinGW-w64
-choco install mingw
-```
-
-**Linux:**
-```bash
-sudo apt-get install gcc
-```
-
-**macOS:**
-```bash
-brew install gcc
-```
-
----
-
-### Compilation Warnings (Can be ignored)
-
-```
-warning: 5 shift/reduce conflicts [-Wconflicts-sr]
-```
-
-These are normal bison warnings due to the grammar having some ambiguity. They don't affect compiler functionality.
-
----
-
-### Linking Errors
-
-If you get linking errors like "undefined reference to...", make sure:
-
-1. All source files are included in the gcc command
-2. Flex and bison generated files are included
-3. The order of files doesn't matter with gcc
-
-```bash
-# Correct order doesn't matter with gcc
-gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler.exe
-# Same as
-gcc main.c ast.c semantic.c symtab.c optimize.c ir.c parser.tab.c lex.yy.c -o compiler.exe
-```
-
----
-
-## Clean Build (Remove Generated Files)
-
-### Windows (PowerShell)
+After building, run:
 
 ```powershell
-Remove-Item -Path lex.yy.c, parser.tab.c, parser.tab.h, compiler.exe -Force -ErrorAction SilentlyContinue
+.\tests\run_tests.ps1
 ```
 
-### Linux/macOS (Bash)
+or:
 
 ```bash
-rm -f lex.yy.c parser.tab.c parser.tab.h compiler
+bash tests/run_tests.sh
 ```
 
-Then rebuild:
-```bash
-bison -d parser.y && flex lexer.l && gcc lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
-```
+## Notes
 
----
-
-## Build Verification
-
-After compilation, verify the executable was created:
-
-### Windows
-```powershell
-Test-Path .\compiler.exe
-```
-
-### Linux/macOS
-```bash
-ls -la ./compiler
-```
-
-### Run the compiler
-```bash
-# Windows
-.\compiler.exe
-
-# Linux/macOS
-./compiler
-```
-
-Then paste test code and press Ctrl+Z (Windows) or Ctrl+D (Linux/macOS).
-
----
-
-## Advanced Build Options
-
-### Enable Debug Symbols (for debugging)
-
-```bash
-bison -d parser.y && flex lexer.l && gcc -g lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
-```
-
-### Enable Optimization
-
-```bash
-bison -d parser.y && flex lexer.l && gcc -O2 lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
-```
-
-### With All Warnings
-
-```bash
-bison -d parser.y && flex lexer.l && gcc -Wall -Wextra lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c -o compiler
-```
-
----
-
-## Using Make (Optional)
-
-Create a `Makefile`:
-
-```makefile
-CC = gcc
-BISON = bison
-FLEX = flex
-
-SOURCES = lex.yy.c parser.tab.c ast.c symtab.c semantic.c optimize.c ir.c main.c
-OBJECTS = $(SOURCES:.c=.o)
-TARGET = compiler
-
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(TARGET)
-
-lex.yy.c: lexer.l
-	$(FLEX) lexer.l
-
-parser.tab.c parser.tab.h: parser.y
-	$(BISON) -d parser.y
-
-clean:
-	rm -f $(OBJECTS) lex.yy.c parser.tab.c parser.tab.h $(TARGET)
-
-.PHONY: all clean
-```
-
-Then build with:
-```bash
-make
-```
-
-And clean with:
-```bash
-make clean
-```
-
----
-
-## Files Generated During Build
-
-| File | Purpose | Can Delete? |
-|------|---------|------------|
-| `lex.yy.c` | Generated lexer | Yes (regenerated from lexer.l) |
-| `parser.tab.c` | Generated parser | Yes (regenerated from parser.y) |
-| `parser.tab.h` | Generated parser header | Yes (regenerated from parser.y) |
-| `compiler.exe` | Executable | Yes (rebuilt) |
-| `*.o` | Object files | Yes (rebuilt) |
-
-All other files (lexer.l, parser.y, ast.c, etc.) are source files and should NOT be deleted.
-
----
-
-## Version Information
-
-- **GCC:** 7.0 or later
-- **Bison:** 3.0 or later
-- **Flex:** 2.5 or later
-
-Check versions:
-```bash
-gcc --version
-bison --version
-flex --version
-```
-
----
-
-**Last Updated:** April 2026
+- The repository checks in `src/parser.tab.c`, `src/parser.tab.h`, and `src/lex.yy.c`, so regeneration is optional.
+- If `bison` or `flex` are missing on a demo machine, you can still rebuild from the generated sources with GCC only.

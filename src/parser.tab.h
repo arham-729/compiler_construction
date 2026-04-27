@@ -56,26 +56,27 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     TYPE = 258,                    /* TYPE  */
     ID = 259,                      /* ID  */
-    ARITH_OP = 260,                /* ARITH_OP  */
-    REL_OP = 261,                  /* REL_OP  */
-    NUM = 262,                     /* NUM  */
-    IF = 263,                      /* IF  */
-    ELSE = 264,                    /* ELSE  */
-    WHILE = 265,                   /* WHILE  */
-    FOR = 266,                     /* FOR  */
-    RETURN = 267,                  /* RETURN  */
-    ASSIGN = 268,                  /* ASSIGN  */
-    SEMICOLON = 269,               /* SEMICOLON  */
-    LPAREN = 270,                  /* LPAREN  */
-    RPAREN = 271,                  /* RPAREN  */
-    LBRACE = 272,                  /* LBRACE  */
-    RBRACE = 273,                  /* RBRACE  */
-    AND = 274,                     /* AND  */
-    OR = 275,                      /* OR  */
-    NOT = 276,                     /* NOT  */
-    LBRACKET = 277,                /* LBRACKET  */
-    RBRACKET = 278,                /* RBRACKET  */
-    COMMA = 279                    /* COMMA  */
+    ADD_OP = 260,                  /* ADD_OP  */
+    MUL_OP = 261,                  /* MUL_OP  */
+    REL_OP = 262,                  /* REL_OP  */
+    NUM = 263,                     /* NUM  */
+    IF = 264,                      /* IF  */
+    ELSE = 265,                    /* ELSE  */
+    WHILE = 266,                   /* WHILE  */
+    FOR = 267,                     /* FOR  */
+    RETURN = 268,                  /* RETURN  */
+    ASSIGN = 269,                  /* ASSIGN  */
+    SEMICOLON = 270,               /* SEMICOLON  */
+    LPAREN = 271,                  /* LPAREN  */
+    RPAREN = 272,                  /* RPAREN  */
+    LBRACE = 273,                  /* LBRACE  */
+    RBRACE = 274,                  /* RBRACE  */
+    AND = 275,                     /* AND  */
+    OR = 276,                      /* OR  */
+    NOT = 277,                     /* NOT  */
+    LBRACKET = 278,                /* LBRACKET  */
+    RBRACKET = 279,                /* RBRACKET  */
+    COMMA = 280                    /* COMMA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -90,7 +91,7 @@ union YYSTYPE
     char *str;
     struct ASTNode *node;
 
-#line 94 "src/parser.tab.h"
+#line 95 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
